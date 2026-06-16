@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1B3A5C">
+<title>Agenda Aseguradoras</title>
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiQWdlbmRhIEFzZWd1cmFkb3JhcyIsInNob3J0X25hbWUiOiJBc2VndXJhcyIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMUMzQTVDIiwidGhlbWVfY29sb3IiOiIjMUMzQTVDIiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjJhV1YzUW05NFBTSXdJakJEVFZ3dklFNVBSa0ZPU1U1SFRBPXdzZlBTSXhMakV5SXlBd0lEQXdJakFpUGp3aGMzTndZVzR5WldBZ0xUNDhMM04yWno0PSIsInNpemVzIjoiMTkyeDE5MiIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn1dfQ==">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1B3A5C;
+  --navy-dark:#0F2440;
+  --navy-mid:#2A4E73;
+  --gold:#C8A04A;
+  --gold-light:#E8C87A;
+  --bg:#F4F6F9;
+  --surface:#FFFFFF;
+  --border:#E1E6EE;
+  --text:#1A2B3C;
+  --text-sec:#5A6A7E;
+  --text-hint:#8A9AB0;
+  --accent:#1E6BBA;
+  --accent-light:#EBF4FF;
+  --danger:#C0392B;
+  --danger-bg:#FDF0EE;
+  --success:#1A7A4A;
+  --success-bg:#EBF7F1;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh;display:flex;flex-direction:column}
+/* HEADER */
+.header{background:var(--navy);color:#fff;padding:0 1.5rem;height:60px;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:100}
+.header-brand{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:600;letter-spacing:-.2px;white-space:nowrap}
+.header-brand-icon{width:32px;height:32px;background:var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.header-search{flex:1;max-width:420px;position:relative}
+.header-search input{width:100%;padding:8px 12px 8px 38px;border-radius:8px;border:1.5px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.1);color:#fff;font-size:14px;outline:none;transition:border .15s,background .15s}
+.header-search input::placeholder{color:rgba(255,255,255,0.5)}
+.header-search input:focus{border-color:var(--gold-light);background:rgba(255,255,255,0.15)}
+.header-search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,0.5);pointer-events:none}
+.header-actions{display:flex;align-items:center;gap:8px;margin-left:auto}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:7px;border:none;cursor:pointer;font-size:13px;font-weight:500;transition:all .15s}
+.btn-ghost{background:rgba(255,255,255,0.1);color:#fff;border:1.5px solid rgba(255,255,255,0.2)}
+.btn-ghost:hover{background:rgba(255,255,255,0.18)}
+.btn-gold{background:var(--gold);color:var(--navy-dark);border:none}
+.btn-gold:hover{background:var(--gold-light)}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#1558a0}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn svg{width:16px;height:16px}
+/* LAYOUT */
+.layout{display:flex;flex:1;overflow:hidden}
+/* SIDEBAR */
+.sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+.sidebar-section{padding:16px 12px 8px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text-hint)}
+.sidebar-filters{padding:0 12px 12px;flex:1;overflow-y:auto}
+.filter-group{margin-bottom:14px}
+.filter-label{font-size:12px;font-weight:600;color:var(--text-sec);margin-bottom:6px;display:block}
+.filter-select{width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:13px;outline:none;cursor:pointer}
+.filter-select:focus{border-color:var(--accent)}
+.filter-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;max-height:220px;overflow-y:auto}
+.filter-tag{padding:4px 8px;border-radius:5px;border:1px solid var(--border);font-size:12px;cursor:pointer;background:#fff;color:var(--text-sec);white-space:nowrap;transition:all .12s}
+.filter-tag:hover{border-color:var(--accent);color:var(--accent)}
+.filter-tag.active{background:var(--accent-light);border-color:var(--accent);color:var(--accent);font-weight:500}
+.sidebar-stats{padding:12px;border-top:1px solid var(--border);background:var(--bg)}
+.stat-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:12px}
+.stat-val{font-weight:700;color:var(--navy);font-size:15px}
+.clear-btn{width:100%;margin-top:10px;padding:8px;border-radius:6px;border:1px solid var(--border);background:#fff;color:var(--text-sec);font-size:12px;cursor:pointer;font-weight:500;transition:all .15s}
+.clear-btn:hover{border-color:var(--danger);color:var(--danger)}
+/* MAIN */
+.main{flex:1;overflow-y:auto;padding:20px}
+/* DASHBOARD STATS */
+.dash-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px}
+.dash-stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:4px}
+.dash-stat-val{font-size:26px;font-weight:700;color:var(--navy);line-height:1}
+.dash-stat-label{font-size:12px;color:var(--text-sec)}
+.dash-stat-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:6px}
+.dash-stat-icon.blue{background:var(--accent-light);color:var(--accent)}
+.dash-stat-icon.gold{background:#FDF6E9;color:#A07030}
+.dash-stat-icon.green{background:var(--success-bg);color:var(--success)}
+/* ACCORDION */
+.accordion{display:flex;flex-direction:column;gap:8px}
+.acc-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.acc-header{display:flex;align-items:center;padding:12px 16px;cursor:pointer;user-select:none;gap:10px;transition:background .12s}
+.acc-header:hover{background:var(--bg)}
+.acc-chevron{transition:transform .2s;color:var(--text-hint);flex-shrink:0}
+.acc-header.open .acc-chevron{transform:rotate(180deg)}
+.acc-name{font-weight:600;font-size:14px;color:var(--navy);flex:1}
+.acc-badge{background:var(--accent-light);color:var(--accent);font-size:12px;font-weight:600;padding:2px 9px;border-radius:20px}
+.acc-logo{width:34px;height:34px;border-radius:7px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;letter-spacing:-1px}
+.acc-body{display:none;padding:0 12px 12px}
+.acc-body.open{display:block}
+/* CONTACT GRID */
+.contact-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.contact-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;transition:border-color .15s,transform .12s}
+.contact-card:hover{border-color:var(--accent);transform:translateY(-1px)}
+.card-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
+.card-avatar{width:38px;height:38px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+.card-name{font-weight:600;font-size:13px;color:var(--text);line-height:1.3}
+.card-role{font-size:11px;color:var(--text-sec);margin-top:2px;line-height:1.3}
+.card-actions{display:flex;gap:5px;margin-left:auto;flex-shrink:0}
+.card-btn{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-sec);transition:all .12s;flex-shrink:0}
+.card-btn:hover{border-color:var(--accent);color:var(--accent)}
+.card-btn.del:hover{border-color:var(--danger);color:var(--danger)}
+.card-contacts{display:flex;flex-direction:column;gap:4px}
+.card-link{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-sec);text-decoration:none;border-radius:5px;padding:3px 4px;transition:color .12s}
+.card-link:hover{color:var(--accent)}
+.card-link svg{flex-shrink:0;color:var(--text-hint)}
+.card-link span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(15,30,55,0.6);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--surface);border-radius:14px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.25)}
+.modal-header{padding:20px 20px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.modal-title{font-size:17px;font-weight:700;color:var(--navy)}
+.modal-close{width:32px;height:32px;border-radius:7px;border:1px solid var(--border);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-sec)}
+.modal-close:hover{border-color:var(--danger);color:var(--danger)}
+.modal-body{padding:20px}
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--text-sec);margin-bottom:5px}
+.form-input{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:7px;font-size:14px;color:var(--text);outline:none;transition:border .15s;background:#fff}
+.form-input:focus{border-color:var(--accent)}
+.form-input.error{border-color:var(--danger)}
+.form-error{font-size:11px;color:var(--danger);margin-top:4px}
+.form-select{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:7px;font-size:14px;color:var(--text);outline:none;background:#fff;cursor:pointer}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+/* CONFIRM */
+.confirm-text{font-size:14px;color:var(--text-sec);line-height:1.6;margin-bottom:4px}
+.confirm-name{font-weight:700;color:var(--text)}
+/* EXPORT */
+.export-menu{position:absolute;top:100%;right:0;margin-top:4px;background:var(--surface);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.12);min-width:160px;z-index:150;overflow:hidden}
+.export-item{padding:10px 14px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px;color:var(--text);transition:background .12s}
+.export-item:hover{background:var(--bg)}
+.export-wrap{position:relative}
+/* VIEW TOGGLE */
+.view-toggle{display:flex;gap:0;border:1px solid var(--border);border-radius:7px;overflow:hidden}
+.view-btn{padding:6px 10px;background:#fff;border:none;cursor:pointer;color:var(--text-sec);transition:all .12s;display:flex;align-items:center}
+.view-btn.active,.view-btn:hover{background:var(--accent-light);color:var(--accent)}
+/* TABLE VIEW */
+.contacts-table{width:100%;border-collapse:collapse;font-size:13px}
+.contacts-table th{padding:10px 12px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-hint);border-bottom:2px solid var(--border);background:var(--bg);position:sticky;top:0}
+.contacts-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.contacts-table tr:hover td{background:var(--accent-light)}
+.contacts-table a{color:var(--accent);text-decoration:none}
+.contacts-table a:hover{text-decoration:underline}
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.company-pill{display:inline-flex;align-items:center;gap:5px;background:var(--accent-light);color:var(--accent);padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+/* TOOLBAR */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.results-info{font-size:13px;color:var(--text-sec);flex:1}
+.results-info strong{color:var(--text);font-weight:600}
+/* EMPTY */
+.empty{text-align:center;padding:60px 20px;color:var(--text-sec)}
+.empty svg{color:var(--text-hint);margin-bottom:16px}
+.empty h3{font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px}
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;z-index:300;transform:translateY(80px);opacity:0;transition:all .25s}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{background:var(--success)}
+.toast.danger{background:var(--danger)}
+/* MOBILE */
+.mobile-menu-btn{display:none;background:none;border:none;color:#fff;cursor:pointer;padding:4px}
+.sidebar-mobile-overlay{display:none}
+@media(max-width:768px){
+  .header{padding:0 12px;gap:8px}
+  .header-brand span{display:none}
+  .btn-gold{display:none}
+  .mobile-menu-btn{display:flex}
+  .layout{position:relative}
+  .sidebar{position:fixed;left:-240px;top:60px;bottom:0;z-index:90;transition:left .25s;box-shadow:4px 0 20px rgba(0,0,0,0.15)}
+  .sidebar.open{left:0}
+  .sidebar-mobile-overlay{display:none;position:fixed;inset:0;top:60px;background:rgba(0,0,0,0.4);z-index:89}
+  .sidebar-mobile-overlay.open{display:block}
+  .main{padding:12px}
+  .dash-stats{grid-template-columns:repeat(2,1fr)}
+  .contact-grid{grid-template-columns:1fr}
+}
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:var(--text-hint)}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <button class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Menú">
+    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <div class="header-brand">
+    <div class="header-brand-icon">
+      <svg width="18" height="18" fill="none" stroke="var(--navy-dark)" stroke-width="2.2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    </div>
+    <span>Agenda Aseguradoras</span>
+  </div>
+  <div class="header-search">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="search" id="searchInput" placeholder="Buscar por nombre, empresa, cargo, mail, teléfono..." oninput="handleSearch()">
+  </div>
+  <div class="header-actions">
+    <div class="export-wrap">
+      <button class="btn btn-ghost" onclick="toggleExportMenu()" id="exportBtn">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Exportar
+      </button>
+      <div class="export-menu" id="exportMenu" style="display:none">
+        <div class="export-item" onclick="exportData('xlsx')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Exportar Excel (.xlsx)
+        </div>
+        <div class="export-item" onclick="exportData('csv')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Exportar CSV
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-gold" onclick="openAddModal()">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nuevo contacto
+    </button>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- SIDEBAR OVERLAY MOBILE -->
+  <div class="sidebar-mobile-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section">Filtros</div>
+    <div class="sidebar-filters">
+      <div class="filter-group">
+        <span class="filter-label">Aseguradora</span>
+        <div class="filter-tags" id="companyTags"></div>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Sector / Función</span>
+        <select class="filter-select" id="sectorFilter" onchange="applyFilters()">
+          <option value="">Todos los sectores</option>
+        </select>
+      </div>
+      <button class="clear-btn" onclick="clearFilters()">✕ Limpiar filtros</button>
+    </div>
+    <div class="sidebar-stats">
+      <div class="stat-row"><span style="color:var(--text-sec)">Mostrando</span><span class="stat-val" id="statShowing">—</span></div>
+      <div class="stat-row"><span style="color:var(--text-sec)">Compañías</span><span class="stat-val" id="statCompanies">—</span></div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main" id="mainContent">
+    <!-- DASHBOARD STATS -->
+    <div class="dash-stats" id="dashStats">
+      <div class="dash-stat">
+        <div class="dash-stat-icon blue">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="dash-stat-val" id="totalContacts">212</div>
+        <div class="dash-stat-label">Contactos totales</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-icon gold">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        </div>
+        <div class="dash-stat-val" id="totalCompanies">38</div>
+        <div class="dash-stat-label">Aseguradoras</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-icon green">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </div>
+        <div class="dash-stat-val" id="totalMails">—</div>
+        <div class="dash-stat-label">Con e-mail</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-icon" style="background:#F5EBF9;color:#7B3FA0">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.5a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.69h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 10a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 17.5z"/></svg>
+        </div>
+        <div class="dash-stat-val" id="totalPhones">—</div>
+        <div class="dash-stat-label">Con teléfono</div>
+      </div>
+    </div>
+
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+      <div class="results-info" id="resultsInfo"></div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select id="sortSelect" class="filter-select" style="width:auto" onchange="applyFilters()">
+          <option value="company">Ordenar por compañía</option>
+          <option value="name">Ordenar por nombre</option>
+        </select>
+        <div class="view-toggle">
+          <button class="view-btn active" id="viewAccordion" onclick="setView('accordion')" title="Vista acordeón">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <button class="view-btn" id="viewTable" onclick="setView('table')" title="Vista tabla">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+          </button>
+        </div>
+        <button class="btn btn-primary" style="font-size:13px;padding:7px 12px" onclick="openAddModal()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Agregar
+        </button>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div id="contentArea"></div>
+  </main>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" style="display:none" onclick="closeModalOnOverlay(event)">
+  <div class="modal" id="modalBox">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modalTitle">Nuevo contacto</h2>
+      <button class="modal-close" onclick="closeModal()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ==================== DATA ====================
+const CONTACTS_DATA = [{"aseguradora": "ACG", "nombre": "Hernán Balbuena", "funcion": "Atención al cliente", "mail": "", "telefono": "+54 11 4320-7206", "id": 1}, {"aseguradora": "ACG", "nombre": "Martín Barrio", "funcion": "Atención al cliente", "mail": "", "telefono": "+54 11 4320-7236", "id": 2}, {"aseguradora": "ACG", "nombre": "Laura Marín", "funcion": "Atención al cliente", "mail": "", "telefono": "+54 11 4320-7256", "id": 3}, {"aseguradora": "ACG", "nombre": "Ayelén Merlo", "funcion": "Atención al cliente", "mail": "", "telefono": "+ 54 11 4320-7224", "id": 4}, {"aseguradora": "ACG", "nombre": "Belén Pereyra", "funcion": "Atención al cliente – Canal Brokers", "mail": "pedidosbrokers@acg.com.ar", "telefono": "+54 11 4320-7200 Int. 7225", "id": 5}, {"aseguradora": "ACG", "nombre": "Nuria Guillen Beneyto", "funcion": "Jefe Comercial", "mail": "nguillen@acg.com.ar", "telefono": "+54 11 4320-7200 Int. 7244", "id": 6}, {"aseguradora": "ACG", "nombre": "Eduardo Antosiewicz", "funcion": "Cobranzas", "mail": "eantosiewicz@acg.com.ar", "telefono": "", "id": 7}, {"aseguradora": "ACG", "nombre": "Verónica Sinónimo", "funcion": "Cobranzas", "mail": "vsinonimo@acg.com.ar", "telefono": "", "id": 8}, {"aseguradora": "Afianzadora", "nombre": "Lorena Anahí Benítez", "funcion": "Ejecutiva de Cuentas", "mail": "lbenitez@afianzadora.com.ar", "telefono": "(+54 11) 3986 2800", "id": 9}, {"aseguradora": "Afianzadora", "nombre": "María Eugenia Manfredi", "funcion": "Ejecutiva", "mail": "mmanfredi@afianzadora.com.ar", "telefono": "", "id": 10}, {"aseguradora": "Afianzadora", "nombre": "Agustín Del Torchio", "funcion": "Gerente Comercial", "mail": "adeltorchio@afianzadora.com.ar", "telefono": "", "id": 11}, {"aseguradora": "Afianzadora", "nombre": "Casilla Bajas", "funcion": "Bajas", "mail": "bajas@afianzadora.com.ar", "telefono": "", "id": 12}, {"aseguradora": "Afianzadora", "nombre": "Casilla Pedidos", "funcion": "Pedidos", "mail": "pedidos@afianzadora.com.ar", "telefono": "", "id": 13}, {"aseguradora": "Afianzadora", "nombre": "Casilla Operaciones", "funcion": "Operaciones – Emisión", "mail": "operaciones@afianzadora.com.ar", "telefono": "", "id": 14}, {"aseguradora": "Allianz", "nombre": "Diego Fluxa", "funcion": "Comercial", "mail": "diego.fluxa@allianz.com.ar", "telefono": "+54 11 2867-8380", "id": 15}, {"aseguradora": "Allianz", "nombre": "Matias A. Boto", "funcion": "Suscriptor Transportes", "mail": "Matias.Boto@allianz.com.ar", "telefono": "+54 (11) 4320-3817", "id": 16}, {"aseguradora": "Allianz", "nombre": "Ignacio Salvatore", "funcion": "Ejecutivo de Cuentas – Comercial", "mail": "ignacio.salvatore@allianz.com.ar", "telefono": "", "id": 17}, {"aseguradora": "Allianz", "nombre": "Casilla Transportes", "funcion": "Transportes (genérico)", "mail": "transportes@allianz.com.ar", "telefono": "", "id": 18}, {"aseguradora": "Allianz", "nombre": "Hernan Sgangone", "funcion": "Suscriptor Transportes", "mail": "Hernan.Sgangone@allianz.com.ar", "telefono": "", "id": 19}, {"aseguradora": "Allianz", "nombre": "Gaston E. Martinez", "funcion": "Emisor de transportes", "mail": "Gaston.Martinez@allianz.com.ar", "telefono": "+54 (11) 4320-3831", "id": 20}, {"aseguradora": "Allianz", "nombre": "Lucas Sebastian Ferrio", "funcion": "Gerente de transportes", "mail": "Lucas.Ferrio@allianz.com.ar", "telefono": "", "id": 21}, {"aseguradora": "Allianz", "nombre": "Facundo Nappe", "funcion": "Suscriptor Property y Seguro Técnico", "mail": "Facundo.Nappe@allianz.com.ar", "telefono": "", "id": 22}, {"aseguradora": "Allianz", "nombre": "Natalia Loreley Ferraro", "funcion": "Suscriptor Property y Seguro Técnico", "mail": "natalialoreley.ferraro@allianz.com.ar", "telefono": "+54 (11) 4320 3800", "id": 23}, {"aseguradora": "Allianz", "nombre": "Lucas Velazquez", "funcion": "Suscriptor Property y Seguro Técnico", "mail": "Lucas.Velazquez@allianz.com.ar", "telefono": "", "id": 24}, {"aseguradora": "Allianz", "nombre": "Emiliano Monzón", "funcion": "Gestor Comercial", "mail": "emiliano.monzon@allianz.com.ar", "telefono": "", "id": 25}, {"aseguradora": "Allianz", "nombre": "Maricel Gonzalez Simunovich", "funcion": "Suscriptor RC/Robo/Rs. Rv.", "mail": "maricel.gonzalez@allianz.com.ar", "telefono": "+54 11 4320-3800", "id": 26}, {"aseguradora": "Allianz", "nombre": "Alejandro Masotti", "funcion": "Suscriptor RC/Robo / Líneas Financieras", "mail": "alejandro.masotti@allianz.com.ar", "telefono": "+54 11 4320-3800", "id": 27}, {"aseguradora": "Allianz", "nombre": "Romina Ladaga", "funcion": "Suscriptor RC", "mail": "romina.ladaga@allianz.com.ar", "telefono": "", "id": 28}, {"aseguradora": "Allianz", "nombre": "Francisco Franco", "funcion": "Suscriptor RC", "mail": "francisco.franco@allianz.com.ar", "telefono": "", "id": 29}, {"aseguradora": "Allianz", "nombre": "Mariela Tomé", "funcion": "Suscriptor Caución", "mail": "mariela.tome@allianz.com.ar", "telefono": "", "id": 30}, {"aseguradora": "Allianz", "nombre": "Casilla Cauciones", "funcion": "Caución (genérico)", "mail": "caucion@allianz.com.ar", "telefono": "", "id": 31}, {"aseguradora": "Allianz", "nombre": "Javier Jaime", "funcion": "Suscriptor integrales", "mail": "javier.jaime@allianz.com.ar", "telefono": "", "id": 32}, {"aseguradora": "Barbuss", "nombre": "Marcelo Amaranto", "funcion": "Team Leader Comercial", "mail": "marcelo.amaranto@barbuss.com", "telefono": "+54 11 5300-3300  +54 11 4032 9800", "id": 33}, {"aseguradora": "Berkley", "nombre": "financieras", "funcion": "Comercial", "mail": "smessa@berkley.com.ar", "telefono": "+54 11 5763 0891", "id": 34}, {"aseguradora": "Berkley", "nombre": "Matías Abdala", "funcion": "Suscriptor Property", "mail": "mabdala@berkley.com.ar", "telefono": "+54 11 6570 1732", "id": 35}, {"aseguradora": "Berkley", "nombre": "Casilla Cauciones", "funcion": "(Generico) Cauciones", "mail": "caucionba@berkley.com.ar", "telefono": "", "id": 36}, {"aseguradora": "Berkley", "nombre": "Gudavicius, Romina", "funcion": "Suscriptor Lineas Financieras", "mail": "RGudavicius@berkley.com.ar", "telefono": "+54 11 5763 0755", "id": 37}, {"aseguradora": "Berkley", "nombre": "Tuvio, Luis", "funcion": "Suscriptor Transportes", "mail": "ltuvio@berkley.com.ar", "telefono": "", "id": 38}, {"aseguradora": "Berkley", "nombre": "Pappalardo, Sebastian", "funcion": "Suscriptor Lineas Financieras", "mail": "SPappalardo@berkley.com.ar", "telefono": "", "id": 40}, {"aseguradora": "Berkley", "nombre": "Roberto Ohyama", "funcion": "Suscriptor RC", "mail": "cohyama@berkley.com.ar", "telefono": "+54 11 6551 9512", "id": 41}, {"aseguradora": "Chubb", "nombre": "Silvia Cipolla", "funcion": "Comercial", "mail": "silvia.cipolla@chubb.com", "telefono": "", "id": 42}, {"aseguradora": "Chubb", "nombre": "Esperanza León", "funcion": "Back Office Assistant", "mail": "esperanza.leon@chubb.com", "telefono": "+54 911 2873-2926", "id": 43}, {"aseguradora": "Crédito y Caución", "nombre": "Francisco Villagra", "funcion": "Comercial", "mail": "fvillagra@creditoycaucion.com.ar", "telefono": "+54 9 11 6417-8200", "id": 44}, {"aseguradora": "Crédito y Caución", "nombre": "Gonzalo Córdoba", "funcion": "Comercial", "mail": "acordoba@creditoycaucion.com.ar", "telefono": "+54 9 11 2287-7070", "id": 45}, {"aseguradora": "Crédito y Caución", "nombre": "Marianela Garcia", "funcion": "Comercial", "mail": "mgarcia@creditoycaucion.com.ar", "telefono": "", "id": 46}, {"aseguradora": "Crédito y Caución", "nombre": "Julieta Bascary", "funcion": "Comercial", "mail": "jbascary@creditoycaucion.com.ar", "telefono": "", "id": 47}, {"aseguradora": "El Norte", "nombre": "Adrian Serfaty", "funcion": "Comercial", "mail": "aserfaty@elnorte.com.ar", "telefono": "", "id": 48}, {"aseguradora": "El Norte", "nombre": "Germán Montenegro", "funcion": "Gerente Agencia Buenos Aires", "mail": "gmontenegro@elnorte.com.ar", "telefono": "(011) 20337800 Int. 5510", "id": 49}, {"aseguradora": "El Norte", "nombre": "Gastón Díaz", "funcion": "Sector Comercial – Administración y Cobranzas", "mail": "gdiaz@elnorte.com.ar", "telefono": "(011) 20337800 Int. 5544", "id": 50}, {"aseguradora": "El Norte", "nombre": "Natalia Luminato", "funcion": "Comercial", "mail": "nluminato@elnorte.com.ar", "telefono": "", "id": 51}, {"aseguradora": "El Surco", "nombre": "Marcelo Gómez", "funcion": "Caución", "mail": "marcelo.gomez@surcoseguros.com.ar", "telefono": "+54 11 5252-1657", "id": 52}, {"aseguradora": "El Surco", "nombre": "Maria Mazzei", "funcion": "Caución", "mail": "maria.mazzei@surcoseguros.com.ar", "telefono": "", "id": 53}, {"aseguradora": "Experta", "nombre": "Emilia Jacobacci", "funcion": "Comercial", "mail": "emilia.jacobacci@experta.com.ar", "telefono": "", "id": 54}, {"aseguradora": "Experta", "nombre": "Ignacio Villamayor", "funcion": "Comercial", "mail": "ignacio.villamayor@experta.com.ar", "telefono": "", "id": 55}, {"aseguradora": "Experta", "nombre": "Julieta Barbieri", "funcion": "Comercial", "mail": "julieta.barbieri@experta.com.ar", "telefono": "", "id": 56}, {"aseguradora": "Experta", "nombre": "Daiana Vacani", "funcion": "Comercial", "mail": "daiana.vacani@experta.com.ar", "telefono": "", "id": 57}, {"aseguradora": "Federación Patronal", "nombre": "Pablo L. Albe", "funcion": "RC/ST", "mail": "palbe@fedpat.com.ar", "telefono": "", "id": 58}, {"aseguradora": "Federación Patronal", "nombre": "Karen Garcia", "funcion": "RC/ST", "mail": "kgarcia@fedpat.com.ar", "telefono": "", "id": 59}, {"aseguradora": "Federación Patronal", "nombre": "Francisco Cabrera", "funcion": "Incendio y Patrimoniales", "mail": "fcabrera@fedpat.com.ar", "telefono": "", "id": 60}, {"aseguradora": "Galicia Seguros", "nombre": "Martín Palilla", "funcion": "Comercial Grandes Brokers", "mail": "mpalilla@galiciaseguros.com.ar", "telefono": "11 7140-0543", "id": 61}, {"aseguradora": "Galicia Seguros", "nombre": "Santiago Abelenda", "funcion": "Encargado Área Broker", "mail": "sabelenda@galiciaseguros.com.ar", "telefono": "11 6152-6829", "id": 62}, {"aseguradora": "Galicia Seguros", "nombre": "Ivana Fernandez", "funcion": "Analista Comercial Brokers", "mail": "ifernandez@galiciaseguros.com.ar", "telefono": "11 5992-5301", "id": 63}, {"aseguradora": "Gestión Seguros", "nombre": "Franco Duperre", "funcion": "Comercial", "mail": "franco.duperre@segurosgestion.com.ar", "telefono": "+54 11 5254-4009", "id": 64}, {"aseguradora": "Gestión Seguros", "nombre": "Patricio Duarte", "funcion": "Comercial", "mail": "patricio.duarte@gestionseguros.com.ar", "telefono": "", "id": 65}, {"aseguradora": "Gestión Seguros", "nombre": "Ariadna Martínez", "funcion": "Comercial", "mail": "ariadna.martinez@segurosgestion.com.ar", "telefono": "", "id": 66}, {"aseguradora": "Hanseatica", "nombre": "Claudio Netri", "funcion": "Ejecutivo Comercial", "mail": "cnetri@hanseatica.com", "telefono": "+54 9 11 6135-7911", "id": 67}, {"aseguradora": "Hanseatica", "nombre": "Claudio Balestieri", "funcion": "Asistente Comercial", "mail": "cbalestieri@hanseatica.com", "telefono": "+54 9 11 6661-1322", "id": 68}, {"aseguradora": "Insur", "nombre": "Matías Agoglia", "funcion": "Ejecutivo de Cuentas Caución", "mail": "magoglia@segurosinsur.seg.ar", "telefono": "+54 11 5236-6089", "id": 69}, {"aseguradora": "Insur", "nombre": "Miguel Pérez", "funcion": "Asistente de Caución", "mail": "mperez@segurosinsur.seg.ar", "telefono": "+54 11 5236-6089", "id": 70}, {"aseguradora": "Insur", "nombre": "Yamil Rocha", "funcion": "Asistente de Caución", "mail": "yrocha@segurosinsur.seg.ar", "telefono": "+54 11 5236-6089", "id": 71}, {"aseguradora": "Insur", "nombre": "Patricia Aquino", "funcion": "Jefe de Administración Cauciones", "mail": "paquino@segurosinsur.seg.ar", "telefono": "+54 11 3986-6774", "id": 72}, {"aseguradora": "Insur", "nombre": "Tomás Folatelli", "funcion": "Subgerente de Caución", "mail": "tfolatelli@segurosinsur.seg.ar", "telefono": "+54 11 5236-6089", "id": 73}, {"aseguradora": "Insur", "nombre": "Maria Milagros Ferrando", "funcion": "Comercial", "mail": "mferrando@segurosinsur.seg.ar", "telefono": "", "id": 74}, {"aseguradora": "Integrity", "nombre": "Johanna Ibarra Filice", "funcion": "Ejecutiva Comercial AMBA", "mail": "jibarra@integrityseguros.com.ar", "telefono": "11 2292-5587", "id": 75}, {"aseguradora": "Integrity", "nombre": "Vanesa Cecilia Mikluch", "funcion": "Ejecutiva Comercial AMBA", "mail": "vmikluch@integrityseguros.com.ar", "telefono": "11 6498-5825", "id": 76}, {"aseguradora": "Integrity", "nombre": "Gustavo Cacerez Rau", "funcion": "Ejecutivo de Cuentas Sr.", "mail": "gcacerezrau@integrityseguros.com.ar", "telefono": "11 2880-6832", "id": 77}, {"aseguradora": "Integrity", "nombre": "Gastón Louzau", "funcion": "Jefe Comercial Regional AMBA", "mail": "glouzau@integrityseguros.com.ar", "telefono": "11 6995-1985", "id": 78}, {"aseguradora": "Integrity", "nombre": "Marcelo Perona", "funcion": "Gerente Técnico", "mail": "", "telefono": "(5411) 4104-0727 / 4027-8624", "id": 79}, {"aseguradora": "Integrity", "nombre": "Lucas Santana", "funcion": "Ejecutivo de cuentas Regional AMBA", "mail": "gsagasta@integrityseguros.com.ar", "telefono": "11 4193-4021", "id": 80}, {"aseguradora": "Integrity", "nombre": "Daniel A. Melese", "funcion": "Jefe de Suscripción Property", "mail": "", "telefono": "(5411) 4104-0712", "id": 81}, {"aseguradora": "Integrity", "nombre": "Rodolfo Cacciola", "funcion": "Gerente de Transporte", "mail": "rcacciola@integrityseguros.com.ar", "telefono": "+54 911 4025-9319", "id": 82}, {"aseguradora": "Integrity", "nombre": "Gonzalo Freddi", "funcion": "Suscriptor Transporte", "mail": "gfreddi@integrityseguros.com.ar", "telefono": "+54 911 3658-7523", "id": 83}, {"aseguradora": "Integrity", "nombre": "Alejandro Panuccio", "funcion": "Suscriptor Transporte", "mail": "apanuccio@integrityseguros.com.ar", "telefono": "+54 911 5930-7313", "id": 84}, {"aseguradora": "Integrity", "nombre": "Vanina Díaz", "funcion": "Operaciones", "mail": "vdiaz@integrityseguros.com.ar", "telefono": "", "id": 85}, {"aseguradora": "Integrity", "nombre": "Norberto Cavaliere", "funcion": "Siniestros", "mail": "ncavaliere@integrityseguros.com.ar", "telefono": "+54 911 6572-1183", "id": 86}, {"aseguradora": "La Caja", "nombre": "Gabriel Acosta", "funcion": "Ejecutivo Comercial – Canal Brokers", "mail": "acostaga@lacaja.com.ar", "telefono": "11 6554-1608", "id": 87}, {"aseguradora": "La Caja", "nombre": "Adriana Ormazabal", "funcion": "Ejecutiva Comercial – Canal Brokers", "mail": "ormazabal@lacaja.com.ar", "telefono": "11 6568-8198", "id": 88}, {"aseguradora": "La Holando", "nombre": "Leonardo Stellato", "funcion": "Comercial", "mail": "lstellato@laholando.com", "telefono": "+54 11 4321-7600 Int. 2063", "id": 89}, {"aseguradora": "La Holando", "nombre": "Nahuel Aguilar", "funcion": "Comercial", "mail": "naguilar@laholando.com", "telefono": "+54 11 4321-7600 Int. 2057", "id": 90}, {"aseguradora": "La Holando", "nombre": "Romina Erchenian", "funcion": "Gerencia Comercial", "mail": "rerchenian@laholando.com", "telefono": "+54 11 4321-7600 Int. 2386", "id": 91}, {"aseguradora": "La Holando", "nombre": "Monica Barreña", "funcion": "Jefe Técnico – Riesgos Marítimos", "mail": "mbarrena@laholando.com", "telefono": "+54 11 4321-7600 Int. 2355", "id": 92}, {"aseguradora": "La Holando", "nombre": "Melina Salerno", "funcion": "Transportes de Mercaderías", "mail": "msalerno@laholando.com", "telefono": "+54 11 4321-7600 Int. 2719", "id": 93}, {"aseguradora": "La Holando", "nombre": "Luciano Ciarrocchi", "funcion": "Transportes de Mercaderías – Jefe Técnico", "mail": "lciarrocchi@laholando.com", "telefono": "+54 11 4321-7600 Int. 2356", "id": 94}, {"aseguradora": "La Holando", "nombre": "Victoria Hanriquez", "funcion": "Transportes de Mercaderías", "mail": "mhanriquez@laholando.com", "telefono": "+54 11 4321-7600 Int. 2004", "id": 95}, {"aseguradora": "La Holando", "nombre": "Gustavo Vergara", "funcion": "Riesgos Marítimos", "mail": "gvergara@laholando.com", "telefono": "+54 11 4321-7600 Int. 2768", "id": 96}, {"aseguradora": "La Segunda", "nombre": "César Germán Torres", "funcion": "Ejecutivo de Cuentas – Negocios Corporativos", "mail": "ctorres@lasegunda.com.ar", "telefono": "11 6605-7311", "id": 97}, {"aseguradora": "La Segunda", "nombre": "Mayra Brienza", "funcion": "Ejecutivo de Cuentas – Negocios Corporativos", "mail": "mbrienza@lasegunda.com.ar", "telefono": "11 2716-7963", "id": 98}, {"aseguradora": "La Segunda", "nombre": "Martin Melero", "funcion": "Suscriptor Senior – Oficina Buenos Aires", "mail": "mmelero@lasegunda.com.ar", "telefono": "(011) 4310-6500 Int. 1155", "id": 99}, {"aseguradora": "La Segunda", "nombre": "Rodrigo Vidal", "funcion": "Suscripción – Incendio y Riesgos Varios", "mail": "rvidal@lasegunda.com.ar", "telefono": "(011) 4310-6500 Int. 1239", "id": 100}, {"aseguradora": "La Segunda", "nombre": "Ernesto Giugge", "funcion": "Seguro Técnico", "mail": "egiugge@lasegunda.com.ar", "telefono": "(0341) 4201000 Int. 2977", "id": 101}, {"aseguradora": "Life Seguros", "nombre": "Lucas Colonel", "funcion": "Actuario – Suscripción Corporativo", "mail": "lcolonel@lifeseguros.com.ar", "telefono": "", "id": 102}, {"aseguradora": "Life Seguros", "nombre": "Natalia Castro", "funcion": "Back Office", "mail": "ncastro@lifeseguros.com.ar", "telefono": "+54 11 6926-2354", "id": 103}, {"aseguradora": "Life Seguros", "nombre": "Claudia Trotta", "funcion": "Gerente de Suscripción Patrimoniales", "mail": "crtrotta@lifeseguros.com.ar", "telefono": "11 6621-3433", "id": 104}, {"aseguradora": "Mapfre", "nombre": "Valeria Maldotti", "funcion": "Dirección de Negocios y Clientes", "mail": "vmaldotti@mapfre.com.ar", "telefono": "+54 11 4320-6721", "id": 105}, {"aseguradora": "Mapfre", "nombre": "Guillermina Acuña", "funcion": "Oficina Comercial Bs. As. Norte", "mail": "acunagu@mapfre.com.ar", "telefono": "(011) 1133338599", "id": 106}, {"aseguradora": "Mapfre", "nombre": "Matías Lacanna", "funcion": "Gerente Comercial – Negocios y Clientes", "mail": "matiasl@mapfre.com.ar", "telefono": "(011) 4320-6721 / 1139321130", "id": 107}, {"aseguradora": "Mapfre", "nombre": "Julián Rodríguez", "funcion": "Jefe Riesgos Corporativos", "mail": "julianz@mapfre.com.ar", "telefono": "+54 11 4320-6700 Int. 3137", "id": 108}, {"aseguradora": "Mapfre", "nombre": "Dana Zoric", "funcion": "Suscripción Transportes y Cascos", "mail": "dbzoric@mapfre.com.ar", "telefono": "+54 11 4320-6700", "id": 109}, {"aseguradora": "Mapfre", "nombre": "Rosana Irrera", "funcion": "Suscripción Transportes", "mail": "rirrera@mapfre.com.ar", "telefono": "+54 11 4320-6700", "id": 110}, {"aseguradora": "Mapfre", "nombre": "Tomás Fernández Taladriz", "funcion": "Suscripción Transportes", "mail": "taladri@mapfre.com.ar", "telefono": "+54 0236 4431759 Int. 32", "id": 111}, {"aseguradora": "Mapfre", "nombre": "Gonzalo Alvarez Luna", "funcion": "Suscripción Caución", "mail": "ghalva1@mapfre.com.ar", "telefono": "+54 11 4320-6700", "id": 112}, {"aseguradora": "Mapfre", "nombre": "Stefanía Ferreira Blanco", "funcion": "Suscripción Caución", "mail": "fbstefa@mapfre.com.ar", "telefono": "+54 11 4320-6700", "id": 113}, {"aseguradora": "Mapfre", "nombre": "María Mercedes Elizalde", "funcion": "Emisión", "mail": "emaria@mapfre.com.ar", "telefono": "+54 11 4320-6700", "id": 114}, {"aseguradora": "Mercantil", "nombre": "Nahuel Vita", "funcion": "Responsable Cías Metro", "mail": "nahuel.ciasmetro@lamercantil.com.ar", "telefono": "4312-7010 / 6994", "id": 115}, {"aseguradora": "Mercantil", "nombre": "Mariano Racco", "funcion": "Responsable Célula Comercial", "mail": "mariano.racco@lamercantil.com.ar", "telefono": "(011) 4310-5400 Int. 5531", "id": 116}, {"aseguradora": "Mercantil", "nombre": "Natalia Silva", "funcion": "Asistente Comercial", "mail": "natalia.silva@lamercantil.com.ar", "telefono": "11 3657-9983", "id": 117}, {"aseguradora": "Mercantil", "nombre": "Daniela Cariel", "funcion": "Suscriptora Riesgos Corporativos", "mail": "daniela.cariel@lamercantil.com.ar", "telefono": "(011) 4339-5600 Int. 5578", "id": 118}, {"aseguradora": "Mercantil", "nombre": "Romina Acevedo", "funcion": "Ejecutivo Comercial", "mail": "romina.ciasmetro@lamercantil.com.ar", "telefono": "(011) 4312-7010 Int. 6994", "id": 119}, {"aseguradora": "Mercantil", "nombre": "Vanesa Mendieta", "funcion": "Comercial", "mail": "vanesa.ciasmetro@lamercantil.com.ar", "telefono": "4312-7010 / 6994", "id": 120}, {"aseguradora": "Mercantil", "nombre": "Cristian Uanini", "funcion": "Suscriptor Riesgos Masivos", "mail": "sus-rv-bai@lamercantil.com.ar", "telefono": "(011) 4310-5400", "id": 121}, {"aseguradora": "Meridional", "nombre": "Andrés Rothenberger", "funcion": "Ejecutivo de Cuentas – Brokers", "mail": "arothenberger@meridionalseguros.com.ar", "telefono": "+54 11 4909-7060 / 3217-6845", "id": 122}, {"aseguradora": "Meridional", "nombre": "Melany Suarez", "funcion": "Ejecutiva de Cuentas – Brokers", "mail": "msuarez@meridionalseguros.com.ar", "telefono": "+54 11 4909-7399 / 3918-7827", "id": 123}, {"aseguradora": "Meridional", "nombre": "Maria Rosa Muzzupappa", "funcion": "Suscriptora Casualty", "mail": "mmuzzupappa@meridionalseguros.com.ar", "telefono": "+54 11 4909-7000 Int. 7303", "id": 124}, {"aseguradora": "Meridional", "nombre": "Marta Susana Cepeda", "funcion": "Suscriptora Casualty", "mail": "mcepeda@meridionalseguros.com.ar", "telefono": "5411 4310-8073 Int. 8073", "id": 125}, {"aseguradora": "Nación", "nombre": "Diego García Hermelo", "funcion": "Ejecutivo de Cuentas – Comercial", "mail": "dgarcia@nacion-seguros.com.ar", "telefono": "(011) 4319-9900 / 3693-0421", "id": 126}, {"aseguradora": "Nación", "nombre": "Martín Perla", "funcion": "Gerente Suscripción Líneas Industriales", "mail": "mperla@nacion-seguros.com.ar", "telefono": "(011) 4319-9900 Int. 13834", "id": 127}, {"aseguradora": "Nación", "nombre": "Andrea Silva", "funcion": "Aeronavegación", "mail": "asilva@nacion-seguros.com.ar", "telefono": "", "id": 128}, {"aseguradora": "Nación", "nombre": "Juan Ignacio D'Elia", "funcion": "Aeronavegación", "mail": "jdelia@nacion-seguros.com.ar", "telefono": "", "id": 129}, {"aseguradora": "Noble", "nombre": "Yanina Israel", "funcion": "Ejecutiva Comercial Patrimoniales", "mail": "yanina.israel@nobleseguros.com", "telefono": "", "id": 130}, {"aseguradora": "Noble", "nombre": "Julio Rosich", "funcion": "Gerente Comercial Patrimoniales", "mail": "julio.rosich@nobleseguros.com", "telefono": "", "id": 131}, {"aseguradora": "Opción", "nombre": "Mayra Almeida", "funcion": "Back Office – Negocios", "mail": "malmeida@opcionseguros.com.ar", "telefono": "(5411) 5222-3200 / 11-2325-5947", "id": 132}, {"aseguradora": "Opción", "nombre": "Roberto Adrián Seoane", "funcion": "Comercial", "mail": "rseoane@opcionseguros.com.ar", "telefono": "", "id": 133}, {"aseguradora": "Opción", "nombre": "Florencia Livorsio", "funcion": "Comercial", "mail": "flivorsio@opcionseguros.com.ar", "telefono": "", "id": 134}, {"aseguradora": "Opción", "nombre": "", "funcion": "Comercial (genérico)", "mail": "comercial@opcionseguros.com.ar", "telefono": "", "id": 135}, {"aseguradora": "Paraná", "nombre": "Mónica Costa", "funcion": "Ejecutiva Comercial – Canal Brokers", "mail": "monica.costa@paranaseguros.com.ar", "telefono": "+54 11 4320-0000 Int. 2237", "id": 136}, {"aseguradora": "Paraná", "nombre": "Estefanía Ferrares", "funcion": "Subgerente Comercial – Canal Brokers", "mail": "estefania.ferrares@paranaseguros.com.ar", "telefono": "+54 11 4320-0000 Int. 461", "id": 137}, {"aseguradora": "Paraná", "nombre": "Pablo Olguin", "funcion": "Comercial", "mail": "pablo.olguin@paranaseguros.com.ar", "telefono": "", "id": 138}, {"aseguradora": "Paraná", "nombre": "Pamela Trepat", "funcion": "ART", "mail": "pamela.trepat@paranaart.com.ar", "telefono": "", "id": 139}, {"aseguradora": "Premiar", "nombre": "Jennifer Nenna", "funcion": "Departamento Comercial", "mail": "jennifer.nenna@premiar.seg.ar", "telefono": "+54 9 11 5735-3796", "id": 140}, {"aseguradora": "Premiar", "nombre": "Juan Oliva Magrone", "funcion": "Asistente Comercial", "mail": "juan.oliva@premiar.seg.ar", "telefono": "+54 9 11 3988-7094", "id": 141}, {"aseguradora": "Premiar", "nombre": "Nicolás Acita", "funcion": "Asistente Comercial", "mail": "nicolas.acita@premiar.seg.ar", "telefono": "+54 9 11 6627-1102", "id": 142}, {"aseguradora": "Premiar", "nombre": "Pedro Clavijo", "funcion": "Asistente Comercial", "mail": "pedro.clavijo@premiar.seg.ar", "telefono": "+54 9 11 2293-0693", "id": 143}, {"aseguradora": "Premiar", "nombre": "Leandro Saa", "funcion": "Asistente Comercial", "mail": "leandro.saa@premiar.seg.ar", "telefono": "+54 9 11 3124-2570", "id": 144}, {"aseguradora": "Premiar", "nombre": "Luisa Pérez Marexiano", "funcion": "Asistente Comercial", "mail": "luisa.marexiano@premiar.seg.ar", "telefono": "+54 11 4980-2278", "id": 145}, {"aseguradora": "Premiar", "nombre": "Mariano Herrera", "funcion": "Dto. de Cobranzas", "mail": "mariano.herrera@premiar.seg.ar", "telefono": "+54 9 11 2478-8228", "id": 146}, {"aseguradora": "Premiar", "nombre": "Ruth Risman", "funcion": "Unidad de Negocios", "mail": "ruth.risman@premiar.seg.ar", "telefono": "+54 9 11 5143-8114", "id": 147}, {"aseguradora": "Premiar", "nombre": "Ian Caplan", "funcion": "Comercial", "mail": "ian.caplan@premiar.seg.ar", "telefono": "", "id": 148}, {"aseguradora": "Premiar", "nombre": "Julian Gauto", "funcion": "Comercial", "mail": "julian.gauto@premiar.seg.ar", "telefono": "", "id": 149}, {"aseguradora": "Premiar", "nombre": "", "funcion": "Pedidos (genérico)", "mail": "pedidos@premiar.seg.ar", "telefono": "", "id": 150}, {"aseguradora": "Provincia Seguros", "nombre": "Maximiliano Natta", "funcion": "Ejecutivo de Cuentas – Comercial", "mail": "nattam@pseguros.com.ar", "telefono": "", "id": 151}, {"aseguradora": "Provincia Seguros", "nombre": "Juan Ignacio Montenegro", "funcion": "Líder de equipo comercial", "mail": "montenegroj@pseguros.com.ar", "telefono": "", "id": 152}, {"aseguradora": "Provincia Seguros", "nombre": "María Celeste Garcés", "funcion": "Ejecutiva de Cuentas", "mail": "garcesm@pseguros.com.ar", "telefono": "", "id": 153}, {"aseguradora": "Rivadavia", "nombre": "Gastón López", "funcion": "Planificación y Desarrollo Comercial", "mail": "gastonlopez@segurosrivadavia.com", "telefono": "", "id": 154}, {"aseguradora": "Rivadavia", "nombre": "Luisina Lallo", "funcion": "Planificación y Desarrollo Comercial", "mail": "llallo@segurosrivadavia.com", "telefono": "221 513-3200 Int. 3478", "id": 155}, {"aseguradora": "Rivadavia", "nombre": "Franco Mastrocésare", "funcion": "Planificación y Desarrollo Comercial", "mail": "fmastrocesare@segurosrivadavia.com", "telefono": "0221 513-3200", "id": 156}, {"aseguradora": "RUS", "nombre": "Andrea Molina", "funcion": "Ejecutiva Comercial – Corporativos", "mail": "andrea.molina@riouruguay.com.ar", "telefono": "(011) 4363-7350 Int. 7381", "id": 157}, {"aseguradora": "RUS", "nombre": "Amelia Metetiero", "funcion": "Ejecutiva Comercial – Corporativos", "mail": "amelia.metetiero@riouruguay.com.ar", "telefono": "221 682-4732", "id": 158}, {"aseguradora": "RUS", "nombre": "Guillermo Heis", "funcion": "Técnico – Suscripción Corporativa", "mail": "gheis@mail.rus.com.ar", "telefono": "+54 9 3442 629536", "id": 159}, {"aseguradora": "RUS", "nombre": "Micaela Guy", "funcion": "Coordinación Agro", "mail": "mguy@mail.rus.com.ar", "telefono": "+54 9 3442 626808", "id": 160}, {"aseguradora": "RUS", "nombre": "Mariano Kloster", "funcion": "Agronegocios", "mail": "mkloster@mail.rus.com.ar", "telefono": "+54 9 3442 532245", "id": 161}, {"aseguradora": "San Cristóbal", "nombre": "Santiago Iribarne", "funcion": "Jefe Suscripción Riesgos Corporativos", "mail": "santiago.iribarne@gruposancristobal.com", "telefono": "+54 9 11 3566-5835", "id": 162}, {"aseguradora": "San Cristóbal", "nombre": "Agustina Cuñado", "funcion": "Analista Comercial – Grandes Brokers", "mail": "agustina.cunado@gruposancristobal.com", "telefono": "(+54 341) 5196736", "id": 163}, {"aseguradora": "San Cristóbal", "nombre": "Samantha Jelen", "funcion": "Ejecutiva de Cuentas – Grandes Brokers", "mail": "samantha.jelen@gruposancristobal.com", "telefono": "+54 9 11 2628-6442", "id": 164}, {"aseguradora": "San Cristóbal", "nombre": "Juan Agustín Retorta", "funcion": "Suscriptor – Riesgos Corporativos", "mail": "juan.retorta@gruposancristobal.com", "telefono": "+54 9 11 2603-8106", "id": 165}, {"aseguradora": "San Cristóbal", "nombre": "Laura Rivas Massaro", "funcion": "Ejecutiva de Cuentas – Grandes Brokers", "mail": "laura.rivasmassaro@gruposancristobal.com", "telefono": "+54 9 11 6876-8654", "id": 166}, {"aseguradora": "San Cristóbal", "nombre": "Juan Manuel Martino", "funcion": "Suscriptor – Riesgos Corporativos", "mail": "juan.martino@gruposancristobal.com", "telefono": "", "id": 167}, {"aseguradora": "Sancor", "nombre": "Camila Picón", "funcion": "Oficial de Negocios – Corporativos", "mail": "capicon@sancorseguros.com", "telefono": "+54 11 4814-7000 Int. 20044", "id": 168}, {"aseguradora": "Sancor", "nombre": "Octavio Procopio", "funcion": "Oficial de Negocios – Corporativos", "mail": "mprocopio@sancorseguros.com", "telefono": "+54 11 1580310683 Int. 20234", "id": 169}, {"aseguradora": "Sancor", "nombre": "Gonzalo Peraita", "funcion": "Oficial de Negocios – San Isidro", "mail": "gperaita@sancorseguros.com", "telefono": "+54 11 4897-3128", "id": 170}, {"aseguradora": "Sancor", "nombre": "Maria Belen Serodio", "funcion": "Suscriptora Transporte Corporación", "mail": "mserodio@sancorseguros.com", "telefono": "+54 11 8059-0205", "id": 171}, {"aseguradora": "Sancor", "nombre": "Evelyn Baggio", "funcion": "Suscriptor Caución Ambiental", "mail": "ebaggio@sancorseguros.com", "telefono": "+54 3493 428500 Int. 54209", "id": 172}, {"aseguradora": "Sancor", "nombre": "Belén Singer", "funcion": "Suscriptor Caución", "mail": "bsinger@sancorseguros.com", "telefono": "+54 3493 428500 Int. 54110", "id": 173}, {"aseguradora": "Sancor", "nombre": "Guillermo Fus", "funcion": "Oficial de Negocios – Grandes Riesgos", "mail": "gfus@sancorseguros.com", "telefono": "+54 11 4814-7000 Int. 20241", "id": 174}, {"aseguradora": "SMG", "nombre": "Rodrigo Coll", "funcion": "Ejecutivo de Cuentas – Brokers", "mail": "rodrigo.coll@swissmedical.com.ar", "telefono": "+54 11 3631-8463", "id": 175}, {"aseguradora": "SMG", "nombre": "Jorgelina Ciavone", "funcion": "Ejecutiva de Cuentas – Brokers", "mail": "jorgelina.ciavone@smg.com.ar", "telefono": "11 4149-8666", "id": 176}, {"aseguradora": "SMG", "nombre": "Andrea Cano", "funcion": "Suscripción Servicios Médicos y RC Profesional", "mail": "andrea.cano@smg.com.ar", "telefono": "(011) 5239-6370", "id": 177}, {"aseguradora": "SMG", "nombre": "María Carolina Rodríguez", "funcion": "Suscriptor – Gerencia Técnica", "mail": "maria.rodriguez@smg.com.ar", "telefono": "(011) 5239-6341", "id": 178}, {"aseguradora": "SMG", "nombre": "Diego Alejandro Batista", "funcion": "Suscriptor Sr. Property, Casualty, Marine", "mail": "diegoalejandro.batista@smg.com.ar", "telefono": "(011) 5239-6326", "id": 179}, {"aseguradora": "Starr", "nombre": "Victoria Barberá", "funcion": "Technical Lines Manager", "mail": "victoria.barbera@starrcompanies.com", "telefono": "+54 11 5173-7471", "id": 180}, {"aseguradora": "Starr", "nombre": "Lucas Sobrino", "funcion": "Technical Lines Junior Underwriter", "mail": "lucas.sobrino@starr.com", "telefono": "+54 911 3273-5705", "id": 181}, {"aseguradora": "Starr", "nombre": "Virginia Glogau", "funcion": "Casualty & Financial Lines UW", "mail": "virginia.glogau@starr.com", "telefono": "+54 911 2459-5636", "id": 182}, {"aseguradora": "Starr", "nombre": "Silvia Karina Miguez", "funcion": "General Liability Underwriting Manager", "mail": "silvia.miguez@starrcompanies.com", "telefono": "+54 911 4424-1014", "id": 183}, {"aseguradora": "Starr", "nombre": "Marina Daro", "funcion": "Operations Assistant", "mail": "marina.daro@starrcompanies.com", "telefono": "+54 911 5738-3524", "id": 184}, {"aseguradora": "Testimonio", "nombre": "Francisco Scarsi Fernández Núñez", "funcion": "Ejecutivo Comercial", "mail": "francisco.scarsi@testimonioseguros.com", "telefono": "+54 11 5272-0750 Ext. 764", "id": 185}, {"aseguradora": "Testimonio", "nombre": "Gonzalo Geraci", "funcion": "Comercial", "mail": "gonzalo.geraci@testimonioseguros.com", "telefono": "", "id": 186}, {"aseguradora": "Testimonio", "nombre": "Bruna Bilancieri", "funcion": "Comercial", "mail": "bruna.bilancieri@testimonioseguros.com", "telefono": "", "id": 187}, {"aseguradora": "Testimonio", "nombre": "Santiago Breetz", "funcion": "Comercial", "mail": "santiago.breetz@testimonioseguros.com", "telefono": "+54 11 5272-0750 Ext. 763", "id": 188}, {"aseguradora": "Tutelar", "nombre": "Emiliano M. Bender", "funcion": "Jefe de Caución", "mail": "ebender@tutelarseguros.com.ar", "telefono": "+54 11 4326-0073 Int. 111", "id": 189}, {"aseguradora": "Tutelar", "nombre": "", "funcion": "Solicitudes (genérico)", "mail": "solicitudes@tutelarseguros.com.ar", "telefono": "", "id": 190}, {"aseguradora": "Tutelar", "nombre": "", "funcion": "Bajas (genérico)", "mail": "bajas@tutelarseguros.com.ar", "telefono": "", "id": 191}, {"aseguradora": "Zurich", "nombre": "Aldana García", "funcion": "Commercial Insurance", "mail": "aldana.garcia@zurich.com", "telefono": "+54 9 11 4098-1487", "id": 192}, {"aseguradora": "Zurich", "nombre": "Ezequiel Rimoldi", "funcion": "Bloqueos – Sales & Distribution", "mail": "e.rimoldi@zurich.com", "telefono": "", "id": 193}, {"aseguradora": "Zurich", "nombre": "Pablo Rapisarda", "funcion": "Commercial Insurance", "mail": "pablo.rapisarda@zurich.com", "telefono": "+54 9 11 4159-8857", "id": 194}, {"aseguradora": "Zurich", "nombre": "Silvina Albiac", "funcion": "Commercial Insurance", "mail": "silvina.albiac@zurich.com", "telefono": "+54 9 11 2179-9249", "id": 195}, {"aseguradora": "Zurich", "nombre": "Sergio Maldonado", "funcion": "Comercial", "mail": "sergio.maldonado@zurich.com", "telefono": "", "id": 196}, {"aseguradora": "Zurich", "nombre": "Pablo Raijer", "funcion": "UW Middle Market – Commercial Insurance", "mail": "pablo.raijer@zurich.com", "telefono": "+54 9 11 5695-5436", "id": 197}, {"aseguradora": "Zurich", "nombre": "Juan Carlos Puglia", "funcion": "Property & Engineering Lines", "mail": "juancarlos.puglia@zurich.com", "telefono": "", "id": 198}, {"aseguradora": "Zurich", "nombre": "Nicolás Bernardi Bosco", "funcion": "Property & Engineering Lines", "mail": "n.bernardibosco@zurich.com", "telefono": "", "id": 199}, {"aseguradora": "Zurich", "nombre": "Milagros Salas", "funcion": "Sr. Account Executive – Large Commercial Insurance", "mail": "milagros.salas1@zurich.com", "telefono": "+54 9 11 6444-0851", "id": 200}, {"aseguradora": "Zurich", "nombre": "Luciana Andrea Bustos", "funcion": "Corporate", "mail": "luciana.bustos@zurich.com", "telefono": "", "id": 201}, {"aseguradora": "Zurich", "nombre": "María Florencia Scolari", "funcion": "Suscriptor Transporte", "mail": "maria.florencia.scolari@zurich.com", "telefono": "+54 11 4819-1000 Int. 549468", "id": 202}, {"aseguradora": "Zurich", "nombre": "Mónica Beatriz Tanzi", "funcion": "Sr Underwriting Analyst – Commercial Lines", "mail": "monica.tanzi@zurich.com", "telefono": "+54 9 11 4159-8804", "id": 203}, {"aseguradora": "Zurich", "nombre": "Gabriel Moreda", "funcion": "Property & Engineering Lines", "mail": "gabriel.moreda@zurich.com", "telefono": "+54 9 11 4177-0461", "id": 204}, {"aseguradora": "Zurich", "nombre": "Mariano Pavanel", "funcion": "RC Middle Market", "mail": "mariano.pavanel@zurich.com", "telefono": "", "id": 205}, {"aseguradora": "Zurich", "nombre": "Yamila Escandar", "funcion": "RC Middle Market", "mail": "yamila.escandar@zurich.com", "telefono": "", "id": 206}, {"aseguradora": "Zurich", "nombre": "Daniel Iperione", "funcion": "RC", "mail": "daniel.iperione@zurich.com", "telefono": "", "id": 207}, {"aseguradora": "Zurich", "nombre": "Analia Denegri", "funcion": "RC Large Commercial", "mail": "analia.denegri@zurich.com", "telefono": "", "id": 208}, {"aseguradora": "Zurich", "nombre": "Ignacio Kolarik", "funcion": "Motor", "mail": "ignacio.kolarik@zurich.com", "telefono": "", "id": 209}, {"aseguradora": "Zurich", "nombre": "Yanina Britos", "funcion": "Property", "mail": "yanina.britos@zurich.com", "telefono": "", "id": 210}, {"aseguradora": "Zurich", "nombre": "Cristian Dario Berry", "funcion": "Marine", "mail": "cristian.1.berry@zurich.com", "telefono": "", "id": 211}, {"aseguradora": "Zurich", "nombre": "Florencia Scolari", "funcion": "Marine", "mail": "maria.florencia.scolari@zurich.com", "telefono": "", "id": 212}, {"aseguradora": "Zurich", "nombre": "Mónica Tanzi", "funcion": "Consorcio", "mail": "monica.tanzi@zurich.com", "telefono": "", "id": 213}];
+
+// ==================== STATE ====================
+let contacts = JSON.parse(localStorage.getItem('contacts_data') || 'null') || CONTACTS_DATA.map(c=>({...c}));
+let nextId = Math.max(...contacts.map(c=>c.id)) + 1;
+let searchQuery = '';
+let filterCompany = '';
+let filterSector = '';
+let currentView = 'accordion';
+let expandedCompanies = new Set();
+const AVATAR_COLORS = ['#1B3A5C','#2A4E73','#1E6BBA','#C8A04A','#7B3FA0','#1A7A4A','#C0392B','#16697A','#8B4513'];
+
+// ==================== PERSISTENCE ====================
+function saveContacts(){localStorage.setItem('contacts_data',JSON.stringify(contacts))}
+
+// ==================== UTILS ====================
+function initials(name){
+  if(!name)return '?';
+  const parts=name.trim().split(/\s+/);
+  if(parts.length===1)return parts[0][0].toUpperCase();
+  return (parts[0][0]+parts[parts.length-1][0]).toUpperCase();
+}
+function avatarColor(name){
+  let h=0;for(const c of (name||''))h=(h*31+c.charCodeAt(0))%AVATAR_COLORS.length;
+  return AVATAR_COLORS[h];
+}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function normalize(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
+
+// ==================== FILTERS ====================
+function getFiltered(){
+  let result=[...contacts];
+  if(searchQuery){
+    const q=normalize(searchQuery);
+    result=result.filter(c=>
+      normalize(c.nombre).includes(q)||
+      normalize(c.aseguradora).includes(q)||
+      normalize(c.funcion).includes(q)||
+      normalize(c.mail).includes(q)||
+      normalize(c.telefono).includes(q)
+    );
+  }
+  if(filterCompany)result=result.filter(c=>c.aseguradora===filterCompany);
+  if(filterSector)result=result.filter(c=>normalize(c.funcion).includes(normalize(filterSector)));
+  const sort=document.getElementById('sortSelect').value;
+  if(sort==='name')result.sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
+  else result.sort((a,b)=>a.aseguradora.localeCompare(b.aseguradora,'es'));
+  return result;
+}
+
+// ==================== SIDEBAR ====================
+function buildSidebar(){
+  const companies=[...new Set(contacts.map(c=>c.aseguradora))].sort((a,b)=>a.localeCompare(b,'es'));
+  const sectors=[...new Set(contacts.map(c=>c.funcion).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
+  // Company tags
+  const ct=document.getElementById('companyTags');
+  ct.innerHTML=companies.map(c=>`<span class="filter-tag${filterCompany===c?' active':''}" onclick="toggleCompanyFilter('${esc(c)}')">${esc(c)}</span>`).join('');
+  // Sector select
+  const ss=document.getElementById('sectorFilter');
+  const cur=ss.value;
+  ss.innerHTML='<option value="">Todos los sectores</option>'+sectors.map(s=>`<option value="${esc(s)}"${filterSector===s?' selected':''}>${esc(s)}</option>`).join('');
+  if(cur)ss.value=cur;
+}
+function toggleCompanyFilter(company){
+  filterCompany=filterCompany===company?'':company;
+  buildSidebar();
+  render();
+}
+function applyFilters(){
+  filterSector=document.getElementById('sectorFilter').value;
+  render();
+}
+function clearFilters(){
+  filterCompany='';filterSector='';searchQuery='';
+  document.getElementById('searchInput').value='';
+  document.getElementById('sectorFilter').value='';
+  buildSidebar();
+  render();
+}
+function handleSearch(){
+  searchQuery=document.getElementById('searchInput').value;
+  render();
+}
+
+// ==================== RENDER ====================
+function render(){
+  const filtered=getFiltered();
+  // Stats
+  document.getElementById('statShowing').textContent=filtered.length;
+  const companies=new Set(filtered.map(c=>c.aseguradora));
+  document.getElementById('statCompanies').textContent=companies.size;
+  // Results info
+  const hasFilter=searchQuery||filterCompany||filterSector;
+  document.getElementById('resultsInfo').innerHTML=hasFilter
+    ?`<strong>${filtered.length}</strong> resultado${filtered.length!==1?'s':''} de ${contacts.length} contactos`
+    :`<strong>${contacts.length}</strong> contactos en <strong>${companies.size}</strong> aseguradoras`;
+  // Content
+  if(filtered.length===0){
+    document.getElementById('contentArea').innerHTML=`<div class="empty"><svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><h3>Sin resultados</h3><p>No se encontraron contactos con esos criterios.<br>Probá ajustando la búsqueda o los filtros.</p></div>`;
+    return;
+  }
+  if(currentView==='table')renderTable(filtered);
+  else renderAccordion(filtered);
+}
+function renderAccordion(filtered){
+  const grouped={};
+  filtered.forEach(c=>{if(!grouped[c.aseguradora])grouped[c.aseguradora]=[];grouped[c.aseguradora].push(c);});
+  const html=Object.entries(grouped).sort((a,b)=>a[0].localeCompare(b[0],'es')).map(([company,list])=>{
+    const isOpen=expandedCompanies.has(company)||(searchQuery||filterSector);
+    const abbr=company.split(/\s+/).map(w=>w[0]).join('').slice(0,3).toUpperCase();
+    const bg=avatarColor(company);
+    return `<div class="acc-item">
+      <div class="acc-header${isOpen?' open':''}" onclick="toggleAccordion('${esc(company)}',this)">
+        <div class="acc-logo" style="background:${bg}">${esc(abbr)}</div>
+        <span class="acc-name">${esc(company)}</span>
+        <span class="acc-badge">${list.length} contacto${list.length!==1?'s':''}</span>
+        <svg class="acc-chevron" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="acc-body${isOpen?' open':''}">
+        <div class="contact-grid">${list.map(c=>contactCard(c)).join('')}</div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('contentArea').innerHTML=`<div class="accordion">${html}</div>`;
+}
+function renderTable(filtered){
+  const rows=filtered.map(c=>`<tr>
+    <td><div style="display:flex;align-items:center;gap:8px">
+      <div class="card-avatar" style="width:30px;height:30px;font-size:11px;background:${avatarColor(c.aseguradora)}">${esc(initials(c.nombre))}</div>
+      <span style="font-weight:500">${esc(c.nombre||'(sin nombre)')}</span>
+    </div></td>
+    <td><span class="company-pill">${esc(c.aseguradora)}</span></td>
+    <td style="color:var(--text-sec);font-size:12px">${esc(c.funcion)}</td>
+    <td>${c.mail?`<a href="mailto:${esc(c.mail)}">${esc(c.mail)}</a>`:''}</td>
+    <td>${c.telefono?`<a href="tel:${esc(c.telefono)}">${esc(c.telefono)}</a>`:''}</td>
+    <td><div style="display:flex;gap:5px">
+      <button class="card-btn" onclick="openEditModal(${c.id})" title="Editar">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      </button>
+      <button class="card-btn del" onclick="openDeleteModal(${c.id})" title="Eliminar">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+      </button>
+    </div></td>
+  </tr>`).join('');
+  document.getElementById('contentArea').innerHTML=`<div class="table-wrap"><table class="contacts-table">
+    <thead><tr><th>Nombre</th><th>Aseguradora</th><th>Función</th><th>E-mail</th><th>Teléfono</th><th style="width:70px">Acciones</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table></div>`;
+}
+function contactCard(c){
+  const bg=avatarColor(c.nombre||c.aseguradora);
+  const ini=initials(c.nombre);
+  return `<div class="contact-card">
+    <div class="card-top">
+      <div class="card-avatar" style="background:${bg}">${esc(ini)}</div>
+      <div style="min-width:0;flex:1">
+        <div class="card-name">${esc(c.nombre||'Casilla genérica')}</div>
+        <div class="card-role">${esc(c.funcion)}</div>
+      </div>
+      <div class="card-actions">
+        <button class="card-btn" onclick="openEditModal(${c.id})" title="Editar">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="card-btn del" onclick="openDeleteModal(${c.id})" title="Eliminar">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="card-contacts">
+      ${c.mail?`<a class="card-link" href="mailto:${esc(c.mail)}"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><span>${esc(c.mail)}</span></a>`:''}
+      ${c.telefono?`<a class="card-link" href="tel:${esc(c.telefono)}"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.5a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.69h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 10a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 17.5z"/></svg><span>${esc(c.telefono)}</span></a>`:''}
+    </div>
+  </div>`;
+}
+
+// ==================== ACCORDION TOGGLE ====================
+function toggleAccordion(company,header){
+  if(expandedCompanies.has(company))expandedCompanies.delete(company);
+  else expandedCompanies.add(company);
+  header.classList.toggle('open');
+  const body=header.nextElementSibling;
+  body.classList.toggle('open');
+}
+
+// ==================== VIEW ====================
+function setView(v){
+  currentView=v;
+  document.getElementById('viewAccordion').classList.toggle('active',v==='accordion');
+  document.getElementById('viewTable').classList.toggle('active',v==='table');
+  render();
+}
+
+// ==================== DASHBOARD STATS ====================
+function updateDashStats(){
+  document.getElementById('totalContacts').textContent=contacts.length;
+  document.getElementById('totalCompanies').textContent=new Set(contacts.map(c=>c.aseguradora)).size;
+  document.getElementById('totalMails').textContent=contacts.filter(c=>c.mail).length;
+  document.getElementById('totalPhones').textContent=contacts.filter(c=>c.telefono).length;
+}
+
+// ==================== MODAL ====================
+function openModal(){document.getElementById('modalOverlay').style.display='flex'}
+function closeModal(){document.getElementById('modalOverlay').style.display='none'}
+function closeModalOnOverlay(e){if(e.target===document.getElementById('modalOverlay'))closeModal()}
+
+function getContactForm(contact,companies){
+  return `<div class="form-group">
+    <label class="form-label">Aseguradora *</label>
+    <input list="companies-list" class="form-input" id="f-aseguradora" value="${esc(contact?.aseguradora||'')}" placeholder="Nombre de aseguradora">
+    <datalist id="companies-list">${companies.map(c=>`<option value="${esc(c)}">`).join('')}</datalist>
+    <div class="form-error" id="err-aseguradora"></div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Nombre y Apellido</label>
+    <input class="form-input" id="f-nombre" value="${esc(contact?.nombre||'')}" placeholder="Nombre completo">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Función / Sector</label>
+    <input class="form-input" id="f-funcion" value="${esc(contact?.funcion||'')}" placeholder="Cargo o sector">
+  </div>
+  <div class="form-group">
+    <label class="form-label">E-mail</label>
+    <input class="form-input" id="f-mail" type="email" value="${esc(contact?.mail||'')}" placeholder="correo@empresa.com.ar">
+    <div class="form-error" id="err-mail"></div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Teléfono</label>
+    <input class="form-input" id="f-telefono" value="${esc(contact?.telefono||'')}" placeholder="+54 11 XXXX-XXXX">
+  </div>`;
+}
+function validateForm(){
+  let ok=true;
+  const ase=document.getElementById('f-aseguradora').value.trim();
+  const mail=document.getElementById('f-mail').value.trim();
+  if(!ase){document.getElementById('err-aseguradora').textContent='La aseguradora es obligatoria.';document.getElementById('f-aseguradora').classList.add('error');ok=false;}
+  else{document.getElementById('err-aseguradora').textContent='';document.getElementById('f-aseguradora').classList.remove('error');}
+  if(mail&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)){document.getElementById('err-mail').textContent='Formato de e-mail inválido.';document.getElementById('f-mail').classList.add('error');ok=false;}
+  else{document.getElementById('err-mail').textContent='';document.getElementById('f-mail').classList.remove('error');}
+  return ok;
+}
+function getFormValues(){
+  return{
+    aseguradora:document.getElementById('f-aseguradora').value.trim(),
+    nombre:document.getElementById('f-nombre').value.trim(),
+    funcion:document.getElementById('f-funcion').value.trim(),
+    mail:document.getElementById('f-mail').value.trim(),
+    telefono:document.getElementById('f-telefono').value.trim()
+  };
+}
+function openAddModal(){
+  const companies=[...new Set(contacts.map(c=>c.aseguradora))].sort((a,b)=>a.localeCompare(b,'es'));
+  document.getElementById('modalTitle').textContent='Nuevo contacto';
+  document.getElementById('modalBody').innerHTML=getContactForm(null,companies);
+  document.getElementById('modalFooter').innerHTML=`<button class="btn" style="background:var(--bg);border:1px solid var(--border);color:var(--text-sec)" onclick="closeModal()">Cancelar</button><button class="btn btn-primary" onclick="saveNewContact()">Guardar contacto</button>`;
+  openModal();
+}
+function saveNewContact(){
+  if(!validateForm())return;
+  const vals=getFormValues();
+  contacts.push({...vals,id:nextId++});
+  saveContacts();updateDashStats();buildSidebar();render();closeModal();
+  showToast('Contacto agregado correctamente','success');
+}
+function openEditModal(id){
+  const c=contacts.find(x=>x.id===id);if(!c)return;
+  const companies=[...new Set(contacts.map(x=>x.aseguradora))].sort((a,b)=>a.localeCompare(b,'es'));
+  document.getElementById('modalTitle').textContent='Editar contacto';
+  document.getElementById('modalBody').innerHTML=getContactForm(c,companies);
+  document.getElementById('modalFooter').innerHTML=`<button class="btn" style="background:var(--bg);border:1px solid var(--border);color:var(--text-sec)" onclick="closeModal()">Cancelar</button><button class="btn btn-primary" onclick="saveEditContact(${id})">Guardar cambios</button>`;
+  openModal();
+}
+function saveEditContact(id){
+  if(!validateForm())return;
+  const vals=getFormValues();
+  const idx=contacts.findIndex(c=>c.id===id);
+  if(idx>-1){contacts[idx]={...contacts[idx],...vals};}
+  saveContacts();updateDashStats();buildSidebar();render();closeModal();
+  showToast('Contacto actualizado','success');
+}
+function openDeleteModal(id){
+  const c=contacts.find(x=>x.id===id);if(!c)return;
+  document.getElementById('modalTitle').textContent='Eliminar contacto';
+  document.getElementById('modalBody').innerHTML=`<p class="confirm-text">¿Estás seguro de que querés eliminar a <span class="confirm-name">${esc(c.nombre||c.funcion)}</span> de <strong>${esc(c.aseguradora)}</strong>?<br><br>Esta acción no se puede deshacer.</p>`;
+  document.getElementById('modalFooter').innerHTML=`<button class="btn" style="background:var(--bg);border:1px solid var(--border);color:var(--text-sec)" onclick="closeModal()">Cancelar</button><button class="btn btn-danger" onclick="confirmDelete(${id})">Eliminar contacto</button>`;
+  openModal();
+}
+function confirmDelete(id){
+  contacts=contacts.filter(c=>c.id!==id);
+  saveContacts();updateDashStats();buildSidebar();render();closeModal();
+  showToast('Contacto eliminado','danger');
+}
+
+// ==================== EXPORT ====================
+function toggleExportMenu(){
+  const m=document.getElementById('exportMenu');
+  m.style.display=m.style.display==='none'?'block':'none';
+}
+document.addEventListener('click',function(e){
+  if(!document.getElementById('exportBtn').contains(e.target))
+    document.getElementById('exportMenu').style.display='none';
+});
+function exportData(format){
+  document.getElementById('exportMenu').style.display='none';
+  const filtered=getFiltered();
+  if(format==='csv'){
+    const header='Aseguradora,Nombre y Apellido,Función / Sector,Mail,Teléfono\n';
+    const rows=filtered.map(c=>[c.aseguradora,c.nombre,c.funcion,c.mail,c.telefono].map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob=new Blob(['\ufeff'+header+rows],{type:'text/csv;charset=utf-8'});
+    downloadBlob(blob,'contactos_aseguradoras.csv');
+    showToast(`${filtered.length} contactos exportados a CSV`,'success');
+  } else {
+    // Simple XLSX-like format using HTML table (can be opened in Excel)
+    const html=`<html><head><meta charset="UTF-8"></head><body><table><tr><th>Aseguradora</th><th>Nombre y Apellido</th><th>Función / Sector</th><th>Mail</th><th>Teléfono</th></tr>${filtered.map(c=>`<tr><td>${c.aseguradora}</td><td>${c.nombre}</td><td>${c.funcion}</td><td>${c.mail}</td><td>${c.telefono}</td></tr>`).join('')}</table></body></html>`;
+    const blob=new Blob([html],{type:'application/vnd.ms-excel;charset=utf-8'});
+    downloadBlob(blob,'contactos_aseguradoras.xls');
+    showToast(`${filtered.length} contactos exportados a Excel`,'success');
+  }
+}
+function downloadBlob(blob,filename){
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(a.href);
+}
+
+// ==================== TOAST ====================
+let toastTimer;
+function showToast(msg,type=''){
+  clearTimeout(toastTimer);
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast '+(type||'');
+  t.classList.add('show');
+  toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ==================== SIDEBAR MOBILE ====================
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+
+// ==================== INIT ====================
+buildSidebar();
+updateDashStats();
+render();
+// Keyboard shortcut: Ctrl+K or / to focus search
+document.addEventListener('keydown',function(e){
+  if((e.ctrlKey&&e.key==='k')||(e.key==='/'&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA')){
+    e.preventDefault();document.getElementById('searchInput').focus();
+  }
+  if(e.key==='Escape'&&document.getElementById('modalOverlay').style.display!=='none')closeModal();
+});
+</script>
+</body>
+</html>
